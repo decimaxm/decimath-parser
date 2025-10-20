@@ -3,8 +3,8 @@ from custom_queue import Queue
 import os
 import math
 
-""" node of a tree """
 class Node:
+    """ node of a tree """
     def __init__(self, value: str | int, children: Optional[List["Node"]] = []):
         self.value = value 
         self.children = children[:]
@@ -31,9 +31,8 @@ class Node:
     def get_number_of_children(self):
         return len(self.children)
     
-
-""" unbalanced unordered tree """
 class UnorderedNaryTree:
+    """ unbalanced unordered tree """
     def __init__(self, root: Node | None = None, n: int = 2):
         self.root = root 
         self.n = n
@@ -46,15 +45,15 @@ class UnorderedNaryTree:
         terminal_length = os.get_terminal_size().columns
 
         level = 1
-
         if not isinstance(self.root, Node):
             raise Exception("This three hasn't a valid root")
+        
         queue = Queue[Node]()
-        queue.insert(self.root)
-        queue.insert(Node("\n"))
+        queue.enqueue(self.root)
+        queue.enqueue(Node("\n"))
         while len(queue) > 0:
             spaces = math.floor(terminal_length / (math.pow(2,level)))
-            node = queue.pop()
+            node = queue.dequeue()
             if node.value != '\n':
                 to_print = spaces*" "+str(node)+spaces*" "
             else:
@@ -62,10 +61,12 @@ class UnorderedNaryTree:
             print(to_print, end="")
             if len(node.children) > 0:
                 for child in node.children:
-                    queue.insert(child)
+                    queue.enqueue(child)
             elif node.value == '\n' and len(queue) > 0:
                 level = level+1
-                queue.insert(Node("\n"))
+                queue.enqueue(Node("\n"))
+
+
 
 leftmost_nephew =   Node(8)
 second_nephew   =   Node(9)
@@ -74,9 +75,6 @@ third_nephew    =   Node(10)
 fourth_nephew   =   Node(11)
 right_child     =   Node(7, [third_nephew, fourth_nephew])
 root_node       =   Node(5, [left_child, right_child])
-
-
-
 
 tree = UnorderedNaryTree(root_node)
 tree.print_tree()

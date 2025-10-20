@@ -21,3 +21,9 @@ Before actually implementing the parser (and, eventually, the compiler) I need t
 ## 5. Syntax Analysis (a.k.a. Parsing)
 
 
+
+# Implementation
+Before actually computing the parser, we should first define the grammar and the lexer
+
+
+
