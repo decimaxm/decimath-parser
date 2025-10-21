@@ -42,20 +42,36 @@ class UnorderedNaryTree:
     # until then, if you want to create a tree, create raw Nodes and add children directly to them
 
     def print_tree(self):
-        terminal_length = os.get_terminal_size().columns
-
-        level = 1
+        terminal_length = os.get_terminal_size().columns #* 0.75
+        print(terminal_length*"_")
+        level = 0
         if not isinstance(self.root, Node):
             raise Exception("This three hasn't a valid root")
-        
+        prev_mod = {}
         queue = Queue[Node]()
         queue.enqueue(self.root)
         queue.enqueue(Node("\n"))
+        internal_counter = 0
         while len(queue) > 0:
-            spaces = math.floor(terminal_length / (math.pow(2,level)))
             node = queue.dequeue()
+            length = len(str(node))
+            half = terminal_length//2
+            mod = terminal_length % 2
+            adjustments = {i:0 for i in prev_mod.keys()}
             if node.value != '\n':
-                to_print = spaces*" "+str(node)+spaces*" "
+                
+                left_mod = math.ceil(length/2)
+                right_mod = math.floor(length/2)
+                left_padding = half-left_mod-1
+                right_padding = half-right_mod+mod-1
+                adjustments = {i: prev_mod[i] for i in prev_mod.keys() if (internal_counter+1)%(2**(level-i)) == 0}
+                #if sum(adjustments.values()) == 1:
+                if len(adjustments.values()) > 0 and adjustments[min(adjustments.keys())] == 1:
+                    adjust = 1
+                else:
+                    adjust = 0
+                to_print = "|"+left_padding*" "+str(node)+right_padding*" "+"|"+adjust*"^^"
+                internal_counter = internal_counter+1
             else:
                 to_print = node
             print(to_print, end="")
@@ -63,18 +79,57 @@ class UnorderedNaryTree:
                 for child in node.children:
                     queue.enqueue(child)
             elif node.value == '\n' and len(queue) > 0:
+                prev_mod[level] = mod
                 level = level+1
                 queue.enqueue(Node("\n"))
+                terminal_length = half
+                internal_counter = 0
+                
 
 
+# Livello 4 (foglie)
+n1  = Node(1)
+n2  = Node(2)
+n3  = Node(3)
+n4  = Node(4)
+n5  = Node(5)
+n6  = Node(6)
+n7  = Node(7)
+n8  = Node(8)
+n9  = Node(9)
+n10 = Node(10)
+n11 = Node(11)
+n12 = Node(12)
+n13 = Node(13)
+n14 = Node(14)
+n15 = Node(15)
+n15b = Node("15b")
 
-leftmost_nephew =   Node(8)
-second_nephew   =   Node(9)
-left_child      =   Node(6, [leftmost_nephew, second_nephew])
-third_nephew    =   Node(10)
-fourth_nephew   =   Node(11)
-right_child     =   Node(7, [third_nephew, fourth_nephew])
-root_node       =   Node(5, [left_child, right_child])
+# Livello 3
+n16 = Node(16, [n1, n2])
+n17 = Node(17, [n3, n4])
+n18 = Node(18, [n5, n6])
+n19 = Node(19, [n7, n8])
+n20 = Node(20, [n9, n10])
+n21 = Node(21, [n11, n12])
+n22 = Node(22, [n13, n14])
+n23 = Node(23, [n15, n15b])   # un figlio solo per testare un caso asimmetrico
 
-tree = UnorderedNaryTree(root_node)
+# Livello 2
+n24 = Node(24, [n16, n17])
+n25 = Node(25, [n18, n19])
+n26 = Node(26, [n20, n21])
+n27 = Node(27, [n22, n23])
+
+# Livello 1 (radice)
+root = Node(99, [n24, n25])
+right_root = Node(100, [n26, n27])
+
+# Livello 0 (super-radice)
+super_root = Node(200, [root, right_root])
+
+# Costruisci l’albero
+tree = UnorderedNaryTree(super_root)
 tree.print_tree()
+#|                       99                       |
+#|                       100                      |
