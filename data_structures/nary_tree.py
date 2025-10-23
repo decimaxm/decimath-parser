@@ -9,6 +9,12 @@ class Node:
         self.value = value 
         self.children = children[:]
 
+    def get_value(self):
+        return self.value
+    
+    def set_value(self, value: str | int):
+        self.value = value
+
     def add_child(self, node: "Node", index: int = None):
         if index is None:
             index = len(self.children)
@@ -19,8 +25,11 @@ class Node:
             self.children.pop(index)
 
     def update_child(self, index: int, value: str | int):
-        if len(self.children) > 0 and len(self.children) < index:
+        l = len(self.children)
+        if l > 0 and abs(index) < l:
             self.children[index].value = value
+        else:
+            raise KeyError("Index not found")
 
     def print_node(self, endline=None):
         print(self.value, end=endline)
@@ -131,12 +140,12 @@ n26 = Node(26, [n20, n21])
 n27 = Node(27, [n22])
 
 # Livello 1 (radice)
-root = Node(99, [n24])#, n25])
+root = Node(99, [n24, n25])
 right_root = Node(100, [n26, n27])
 
 # Livello 0 (super-radice)
 super_root = Node(200, [root, right_root])
-
+n26.update_child(0, 200)
 # Costruisci l’albero
 tree = UnorderedNaryTree(super_root)
 tree.print_tree()
