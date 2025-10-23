@@ -60,8 +60,8 @@ class UnorderedNaryTree:
             adjustments = {i:0 for i in prev_mod.keys()}
             if node.value != '\n':
                 
-                left_mod = math.ceil(length/2)
-                right_mod = math.floor(length/2)
+                left_mod = math.floor(length/2)
+                right_mod = math.ceil(length/2)
                 left_padding = half-left_mod-1
                 right_padding = half-right_mod+mod-1
                 adjustments = {i: prev_mod[i] for i in prev_mod.keys() if (internal_counter+1)%(2**(level-i)) == 0}
@@ -70,15 +70,22 @@ class UnorderedNaryTree:
                     adjust = 1
                 else:
                     adjust = 0
-                to_print = "|"+left_padding*" "+str(node)+right_padding*" "+"|"+adjust*"^^"
+                #to_print = "|"+left_padding*" "+str(node)+right_padding*" "+"|"+adjust*"^^"
+                to_print = " "+left_padding*" "+str(node)+right_padding*" "+" "+adjust*"  "
                 internal_counter = internal_counter+1
             else:
                 to_print = node
             print(to_print, end="")
-            if len(node.children) > 0:
+            l = len(node.children) 
+            if l > 0:
                 for child in node.children:
                     queue.enqueue(child)
-            elif node.value == '\n' and len(queue) > 0:
+                if node.value != '\n' \
+                    and node.value != "_" \
+                    and l < self.n:
+                        for _ in range(l, self.n):
+                            queue.enqueue(Node("_"))
+            if node.value == '\n' and len(queue) > 0:
                 prev_mod[level] = mod
                 level = level+1
                 queue.enqueue(Node("\n"))
@@ -109,7 +116,8 @@ n15b = Node("15b")
 n16 = Node(16, [n1, n2])
 n17 = Node(17, [n3, n4])
 n18 = Node(18, [n5, n6])
-n19 = Node(19, [n7, n8])
+#n19 = Node(19, [n7, n8])
+n19 = Node(19, [n7])
 n20 = Node(20, [n9, n10])
 n21 = Node(21, [n11, n12])
 n22 = Node(22, [n13, n14])
@@ -119,10 +127,11 @@ n23 = Node(23, [n15, n15b])   # un figlio solo per testare un caso asimmetrico
 n24 = Node(24, [n16, n17])
 n25 = Node(25, [n18, n19])
 n26 = Node(26, [n20, n21])
-n27 = Node(27, [n22, n23])
+#n27 = Node(27, [n22, n23])
+n27 = Node(27, [n22])
 
 # Livello 1 (radice)
-root = Node(99, [n24, n25])
+root = Node(99, [n24])#, n25])
 right_root = Node(100, [n26, n27])
 
 # Livello 0 (super-radice)
