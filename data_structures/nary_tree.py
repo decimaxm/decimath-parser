@@ -51,8 +51,12 @@ class UnorderedNaryTree:
     # until then, if you want to create a tree, create raw Nodes and add children directly to them
 
     def print_tree(self):
-        terminal_length = os.get_terminal_size().columns #* 0.75
-        print(terminal_length*"_")
+        BRANCH_HEIGHT = 4
+        terminal_length = os.get_terminal_size().columns
+
+        imposed_terminal_length = 2**math.floor(math.log2(terminal_length))
+        #imposed_terminal_length = terminal_length
+        print(imposed_terminal_length*"_")
         level = 0
         if not isinstance(self.root, Node):
             raise Exception("This three hasn't a valid root")
@@ -61,45 +65,51 @@ class UnorderedNaryTree:
         queue.enqueue(self.root)
         queue.enqueue(Node("\n"))
         internal_counter = 0
+        max_slots_level = 2**level
+        slot_length = imposed_terminal_length // max_slots_level
+        slot_middle_r = slot_length//2
         while len(queue) > 0:
             node = queue.dequeue()
-            length = len(str(node))
-            half = terminal_length//2
-            mod = terminal_length % 2
-            adjustments = {i:0 for i in prev_mod.keys()}
+            node_value = str(node)
+            length = len(node_value)
+            
+
             if node.value != '\n':
-                
-                left_mod = math.floor(length/2)
-                right_mod = math.ceil(length/2)
-                left_padding = half-left_mod-1
-                right_padding = half-right_mod+mod-1
-                adjustments = {i: prev_mod[i] for i in prev_mod.keys() if (internal_counter+1)%(2**(level-i)) == 0}
-                #if sum(adjustments.values()) == 1:
-                if len(adjustments.values()) > 0 and adjustments[min(adjustments.keys())] == 1:
-                    adjust = 1
-                else:
-                    adjust = 0
-                #to_print = "|"+left_padding*" "+str(node)+right_padding*" "+"|"+adjust*"^^"
-                to_print = " "+left_padding*" "+str(node)+right_padding*" "+" "+adjust*"  "
+                start_slot = slot_length * internal_counter
+                padding = (slot_length - length)/2
+                to_print = math.floor(padding)*" "+node_value+math.ceil(padding)*" "
                 internal_counter = internal_counter+1
+                print(to_print, end="")
             else:
-                to_print = node
-            print(to_print, end="")
+                level = level+1
+                internal_counter = 0
+                print()
+                if len(queue) > 0:
+                    for _ in range(BRANCH_HEIGHT):
+                        for _ in range(max_slots_level):
+                            print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
+                        print()
+                    max_slots_level = 2**level
+                    slot_length = imposed_terminal_length // max_slots_level
+                    slot_middle_r = slot_length//2
+                    for _ in range(max_slots_level//2):
+                        print(math.floor(slot_middle_r-1)*" "+(slot_length+1)*"-"+math.ceil(slot_middle_r)*" ", end="")
+                    print()
+                    for _ in range(BRANCH_HEIGHT//2):
+                        for _ in range(max_slots_level):
+                            print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
+                        print()
+                    queue.enqueue(Node("\n"))
+                
             l = len(node.children) 
             if l > 0:
                 for child in node.children:
                     queue.enqueue(child)
-                if node.value != '\n' \
-                    and node.value != "_" \
+                if node_value != '\n' \
+                    and node_value != "_" \
                     and l < self.n:
                         for _ in range(l, self.n):
                             queue.enqueue(Node("_"))
-            if node.value == '\n' and len(queue) > 0:
-                prev_mod[level] = mod
-                level = level+1
-                queue.enqueue(Node("\n"))
-                terminal_length = half
-                internal_counter = 0
                 
 
 
@@ -149,5 +159,7 @@ n26.update_child(0, 200)
 # Costruisci l’albero
 tree = UnorderedNaryTree(super_root)
 tree.print_tree()
-#|                       99                       |
-#|                       100                      |
+
+#_____________________________________________________________________________________________________
+#                                                 200                                                                                                  |                                                 
+#                                                 |                                                 
