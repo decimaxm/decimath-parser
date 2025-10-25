@@ -37,6 +37,9 @@ class Node:
     def __str__(self):
         return str(self.value)
     
+    def __repr__(self):
+        return str(self.value)
+    
     def get_number_of_children(self):
         return len(self.children)
     
@@ -62,6 +65,7 @@ class UnorderedNaryTree:
             raise Exception("This three hasn't a valid root")
         prev_mod = {}
         queue = Queue[Node]()
+        blank_queue = Queue[Node]()
         queue.enqueue(self.root)
         queue.enqueue(Node("\n"))
         internal_counter = 0
@@ -93,7 +97,9 @@ class UnorderedNaryTree:
                     slot_length = imposed_terminal_length // max_slots_level
                     slot_middle_r = slot_length//2
                     for _ in range(max_slots_level//2):
-                        print(math.floor(slot_middle_r-1)*" "+(slot_length+1)*"-"+math.ceil(slot_middle_r)*" ", end="")
+                        print(math.floor(slot_middle_r-1)*" "+
+                              "/"+(slot_length-1)*"-"+"\\"
+                              +math.ceil(slot_middle_r)*" ", end="")
                     print()
                     for _ in range(BRANCH_HEIGHT//2):
                         for _ in range(max_slots_level):
@@ -103,13 +109,18 @@ class UnorderedNaryTree:
                 
             l = len(node.children) 
             if l > 0:
+                if len(blank_queue) > 0:
+                    while len(blank_queue) > 0:
+                        queue.enqueue(blank_queue.dequeue())
                 for child in node.children:
                     queue.enqueue(child)
-                if node_value != '\n' \
-                    and node_value != "_" \
-                    and l < self.n:
-                        for _ in range(l, self.n):
-                            queue.enqueue(Node("_"))
+            if node_value != '\n' \
+                and l < self.n:
+                    for _ in range(l, self.n):
+                        blank_queue.enqueue(Node("_"))
+            #elif node_value == "_":
+            #    for _ in range(self.n):
+            #        queue.enqueue(Node("_"))
                 
 
 
@@ -133,10 +144,10 @@ n15b = Node("15b")
 
 # Livello 3
 n16 = Node(16, [n1, n2])
-n17 = Node(17, [n3, n4])
+n17 = Node(17)#, [n3, n4])
 n18 = Node(18, [n5, n6])
-#n19 = Node(19, [n7, n8])
-n19 = Node(19, [n7])
+n19 = Node(19, [n7, n8])
+#n19 = Node(19, [n7])
 n20 = Node(20, [n9, n10])
 n21 = Node(21, [n11, n12])
 n22 = Node(22, [n13, n14])
@@ -145,9 +156,11 @@ n23 = Node(23, [n15, n15b])   # un figlio solo per testare un caso asimmetrico
 # Livello 2
 n24 = Node(24, [n16, n17])
 n25 = Node(25, [n18, n19])
-n26 = Node(26, [n20, n21])
-#n27 = Node(27, [n22, n23])
-n27 = Node(27, [n22])
+n26 = Node(26)#, [n20, n21])
+#n26 = Node(26, [n20, n21])
+#n26 = Node(26, [n20])
+n27 = Node(27, [n22, n23])
+#n27 = Node(27, [n22])
 
 # Livello 1 (radice)
 root = Node(99, [n24, n25])
@@ -155,11 +168,6 @@ right_root = Node(100, [n26, n27])
 
 # Livello 0 (super-radice)
 super_root = Node(200, [root, right_root])
-n26.update_child(0, 200)
 # Costruisci l’albero
 tree = UnorderedNaryTree(super_root)
 tree.print_tree()
-
-#_____________________________________________________________________________________________________
-#                                                 200                                                                                                  |                                                 
-#                                                 |                                                 
