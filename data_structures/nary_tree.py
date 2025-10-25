@@ -115,7 +115,7 @@ class UnorderedNaryTree:
                     # print horizontal branches 
                     print_horizontal_branch(slot_length=slot_length, level=level, n=n)
 
-                    # print first half of the NEXT tree branches, OVER the future nodes
+                    # print first half of the NEXT tree branches, ABOVE the future nodes
                     print_vertical_branches(slot_length=slot_length, max_slots_level=max_slots_level)
 
                     # before inserting a \n node, if the tree is not finished yet spill the blanks inside the main queue
