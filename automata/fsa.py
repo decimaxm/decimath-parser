@@ -1,4 +1,4 @@
-import State 
+from dstate import DState
 from pathlib import Path
 
 
@@ -10,19 +10,19 @@ class FSA:
     def __init__(self, name : str):
         self.name = name
         self.__head = INITIAL_STATE
-        self.__states = {INITIAL_STATE: State(INITIAL_STATE)} # I'm thinking about implementing it with a SET...  
+        self.__states = {INITIAL_STATE: DState(INITIAL_STATE)} # I'm thinking about implementing it with a SET...  
         self.__transactions = {}
         self.__acceptance_states = set()
 
     def add_state(self, name : str):
-        if name not in self.states.keys():
+        if name not in self.__states.keys():
             raise KeyError(f"State {name} already exists")
-        self.states[name] = State(name)
+        self.__states[name] = DState(name)
 
 
     # TODO: maybe implement input with a TOKEN class instead of STRING
-    def add_transaction(self, start_state : str, input : str, final_state: str):
-        if not isinstance(start_state, str) or not isinstance(input, str) or not isinstance(final_state, str):
+    def add_transaction(self, start_state : str, input_str : str, final_state: str):
+        if not isinstance(start_state, str) or not isinstance(input_str, str) or not isinstance(final_state, str):
             raise TypeError("Check input type")
         
         if start_state not in self.__states.keys():
@@ -31,15 +31,12 @@ class FSA:
         if final_state not in self.__states.keys():
             raise KeyError(f"Selected state {final_state} does not exist")
 
-        if (start_state, input) not in self.__transactions.keys():
-            self.__transactions[(start_state, input)] = final_state
+        if (start_state, input_str) not in self.__transactions.keys():
+            self.__transactions[(start_state, input_str)] = final_state
         else:
-            raise KeyError(f"Transaction {(start_state, input)} already defined")
-        
-    def set_final(self, final_state : str | list):
-        if not isinstance(final_state, str) and not isinstance(final_state, list):
-            raise TypeError("You must pass a state name or a list of state names")
+            raise KeyError(f"Transaction {(start_state, input_str)} already defined")
     
+    def _set_final(self, final_state : str):
         if isinstance(final_state, str):
             if final_state not in self.__states.keys():
                 raise KeyError(f"State {final_state} doesn't exist")
@@ -48,10 +45,24 @@ class FSA:
                 raise KeyError(f"State {final_state} is already final")
             else:
                 self.__acceptance_states.add(final_state)
+        else:
+            raise TypeError("Final state should be a string")
+    def set_final(self, final_state : str | list):
+        '''Wrapper for _set_final()'''
+          
 
-    def move(self, input : str):
-        if (self.__head, input) in self.__transactions.keys():
-            self.__head = self.__transactions[(self.__head, input)]
+        if not isinstance(final_state, str) and not isinstance(final_state, list):
+            raise TypeError("You must pass a state name or a list of state names")
+    
+        if isinstance(final_state, str):
+            self._set_final(final_state)
+        elif isinstance(final_state, list):
+            for state in final_state:
+                self._set_final(state)
+
+    def move(self, input_str : str):
+        if (self.__head, input_str) in self.__transactions.keys():
+            self.__head = self.__transactions[(self.__head, input_str)]
 
     def check_acceptance(self):
         return self.__head in self.__acceptance_states

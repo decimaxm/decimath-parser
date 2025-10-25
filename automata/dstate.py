@@ -1,4 +1,4 @@
-class State:
+class DState:
 
     def __init__(self, name):
         self.name = name
@@ -13,5 +13,5 @@ class State:
         print("-"*(len(self.name)+4))
 
 
-a = State("F0")
+a = DState("F0")
 a.print_state()
