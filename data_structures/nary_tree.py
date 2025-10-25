@@ -54,57 +54,74 @@ class UnorderedNaryTree:
     # until then, if you want to create a tree, create raw Nodes and add children directly to them
 
     def print_tree(self):
-        BRANCH_HEIGHT = 4
-        terminal_length = os.get_terminal_size().columns
+        """ Pretty-print the content of the tree"""
+        # define two utility functions for a clearer code
+        def print_vertical_branches(slot_length : int, max_slots_level: int, branch_height: int = 2):
+            half_slot = slot_length/2
+            for _ in range(branch_height):
+                for _ in range(max_slots_level):
+                    # vertical branches must have distance equal to slot length - 1
+                    # the first vertical branch should begin half a slot after the terminal left edge
+                    print(math.ceil(half_slot)*" "+"|"+math.floor(half_slot-1)*" ", end="")
+                print()
 
-        imposed_terminal_length = 2**math.floor(math.log2(terminal_length))
-        #imposed_terminal_length = terminal_length
-        print(imposed_terminal_length*"_")
+        def print_horizontal_branch(slot_length : int, level: int, n: int):
+            half_slot = slot_length / 2
+            for _ in range(n**(level-1)):
+                # every horizontal branch must have (n-1) whole slots of '-' and be sorrounded by 2 half slots -> total: SL/2*" " + SL*(N-1)*"-" + SL/2*" " = SL*N
+                # math proof of concept: be SL the slot length
+                #                   SL/2      + 1(/) +   SL      *(N-1)- 1     +1(\)            + SL/2 - 1              = SL + (SL)*(N-1) = SL*N
+                print(math.ceil(half_slot)*" "+"/"+((slot_length)*(n-1)-1)*"-"+"\\"+math.floor(half_slot-1)*" ", end="")
+                        
+            print()
+
+        n = self.n
         level = 0
-        if not isinstance(self.root, Node):
-            raise Exception("This three hasn't a valid root")
-        prev_mod = {}
         queue = Queue[Node]()
         blank_queue = Queue[Node]()
         queue.enqueue(self.root)
         queue.enqueue(Node("\n"))
-        internal_counter = 0
-        max_slots_level = 2**level
+
+        terminal_length = os.get_terminal_size().columns
+        imposed_terminal_length = n**math.floor(math.log(terminal_length, n))
+
+        print(imposed_terminal_length*"_")
+
+        max_slots_level = n**level
         slot_length = imposed_terminal_length // max_slots_level
-        slot_middle_r = slot_length//2
+
         while len(queue) > 0:
             node = queue.dequeue()
             node_value = str(node)
             length = len(node_value)
             
-
-            if node.value != '\n':
-                start_slot = slot_length * internal_counter
+            if node_value != '\n':
+                # print content of the node
                 padding = (slot_length - length)/2
-                to_print = math.floor(padding)*" "+node_value+math.ceil(padding)*" "
-                internal_counter = internal_counter+1
-                print(to_print, end="")
+                print(math.ceil(padding)*" "+node_value+math.floor(padding)*" ", end="")
+
             else:
                 level = level+1
-                internal_counter = 0
                 print()
                 if len(queue) > 0:
-                    for _ in range(BRANCH_HEIGHT):
-                        for _ in range(max_slots_level):
-                            print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
-                        print()
-                    max_slots_level = 2**level
+
+                    # print second half of the tree branches UNDER the nodes
+                    print_vertical_branches(slot_length=slot_length, max_slots_level=max_slots_level)
+
+                    # compute values for the next level
+                    max_slots_level = n**level 
                     slot_length = imposed_terminal_length // max_slots_level
-                    slot_middle_r = slot_length//2
-                    for _ in range(max_slots_level//2):
-                        print(math.floor(slot_middle_r-1)*" "+
-                              "/"+(slot_length-1)*"-"+"\\"
-                              +math.ceil(slot_middle_r)*" ", end="")
-                    print()
-                    for _ in range(BRANCH_HEIGHT//2):
-                        for _ in range(max_slots_level):
-                            print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
-                        print()
+
+                    # print horizontal branches 
+                    print_horizontal_branch(slot_length=slot_length, level=level, n=n)
+
+                    # print first half of the NEXT tree branches, OVER the future nodes
+                    print_vertical_branches(slot_length=slot_length, max_slots_level=max_slots_level)
+
+                    # before inserting a \n node, if the tree is not finished yet spill the blanks inside the main queue
+                    if len(blank_queue) > 0:
+                        while len(blank_queue) > 0:
+                            queue.enqueue(blank_queue.dequeue())
                     queue.enqueue(Node("\n"))
                 
             l = len(node.children) 
@@ -117,57 +134,10 @@ class UnorderedNaryTree:
             if node_value != '\n' \
                 and l < self.n:
                     for _ in range(l, self.n):
+                        # if the node has less than n nodes, put the other ones as blanks, so that the print is easier
+                        # in order to avoid an infinite loop, a buffer queue is used to temporarily the list of _
+                        # the content of this queue will be read only if it is necessary
                         blank_queue.enqueue(Node("_"))
-            #elif node_value == "_":
-            #    for _ in range(self.n):
-            #        queue.enqueue(Node("_"))
                 
 
 
-# leaves
-n1  = Node(1)
-n2  = Node(2)
-n3  = Node(3)
-n4  = Node(4)
-n5  = Node(5)
-n6  = Node(6)
-n7  = Node(7)
-n8  = Node(8)
-n9  = Node(9)
-n10 = Node(10)
-n11 = Node(11)
-n12 = Node(12)
-n13 = Node(13)
-n14 = Node(14)
-n15 = Node(15)
-n15b = Node("15b")
-
-# level 3
-n16 = Node(16, [n1, n2])
-n17 = Node(17)#, [n3, n4])
-n18 = Node(18, [n5, n6])
-n19 = Node(19, [n7, n8])
-#n19 = Node(19, [n7])
-n20 = Node(20, [n9, n10])
-n21 = Node(21, [n11, n12])
-n22 = Node(22, [n13, n14])
-n23 = Node(23, [n15, n15b]) 
-
-# level 2
-n24 = Node(24, [n16, n17])
-n25 = Node(25, [n18, n19])
-n26 = Node(26)#, [n20, n21])
-#n26 = Node(26, [n20, n21])
-#n26 = Node(26, [n20])
-n27 = Node(27, [n22, n23])
-#n27 = Node(27, [n22])
-
-# level 1 (roots)
-root = Node(99, [n24, n25])
-right_root = Node(100, [n26, n27])
-
-# level 0 (super-root)
-super_root = Node(200, [root, right_root])
-# build the 3
-tree = UnorderedNaryTree(super_root)
-tree.print_tree()
