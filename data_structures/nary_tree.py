@@ -124,7 +124,7 @@ class UnorderedNaryTree:
                 
 
 
-# Livello 4 (foglie)
+# leaves
 n1  = Node(1)
 n2  = Node(2)
 n3  = Node(3)
@@ -142,7 +142,7 @@ n14 = Node(14)
 n15 = Node(15)
 n15b = Node("15b")
 
-# Livello 3
+# level 3
 n16 = Node(16, [n1, n2])
 n17 = Node(17)#, [n3, n4])
 n18 = Node(18, [n5, n6])
@@ -151,9 +151,9 @@ n19 = Node(19, [n7, n8])
 n20 = Node(20, [n9, n10])
 n21 = Node(21, [n11, n12])
 n22 = Node(22, [n13, n14])
-n23 = Node(23, [n15, n15b])   # un figlio solo per testare un caso asimmetrico
+n23 = Node(23, [n15, n15b]) 
 
-# Livello 2
+# level 2
 n24 = Node(24, [n16, n17])
 n25 = Node(25, [n18, n19])
 n26 = Node(26)#, [n20, n21])
@@ -162,12 +162,12 @@ n26 = Node(26)#, [n20, n21])
 n27 = Node(27, [n22, n23])
 #n27 = Node(27, [n22])
 
-# Livello 1 (radice)
+# level 1 (roots)
 root = Node(99, [n24, n25])
 right_root = Node(100, [n26, n27])
 
-# Livello 0 (super-radice)
+# level 0 (super-root)
 super_root = Node(200, [root, right_root])
-# Costruisci l’albero
+# build the 3
 tree = UnorderedNaryTree(super_root)
 tree.print_tree()
