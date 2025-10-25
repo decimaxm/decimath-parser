@@ -55,9 +55,10 @@ class UnorderedNaryTree:
 
     def print_tree(self):
         BRANCH_HEIGHT = 4
+        n = self.n
         terminal_length = os.get_terminal_size().columns
 
-        imposed_terminal_length = 2**math.floor(math.log2(terminal_length))
+        imposed_terminal_length = n**math.floor(math.log(terminal_length, n))
         #imposed_terminal_length = terminal_length
         print(imposed_terminal_length*"_")
         level = 0
@@ -69,9 +70,9 @@ class UnorderedNaryTree:
         queue.enqueue(self.root)
         queue.enqueue(Node("\n"))
         internal_counter = 0
-        max_slots_level = 2**level
+        max_slots_level = n**level
         slot_length = imposed_terminal_length // max_slots_level
-        slot_middle_r = slot_length//2
+        slot_middle_r = slot_length/2
         while len(queue) > 0:
             node = queue.dequeue()
             node_value = str(node)
@@ -93,13 +94,11 @@ class UnorderedNaryTree:
                         for _ in range(max_slots_level):
                             print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
                         print()
-                    max_slots_level = 2**level
+                    max_slots_level = n**level
                     slot_length = imposed_terminal_length // max_slots_level
-                    slot_middle_r = slot_length//2
-                    for _ in range(max_slots_level//2):
-                        print(math.floor(slot_middle_r-1)*" "+
-                              "/"+(slot_length-1)*"-"+"\\"
-                              +math.ceil(slot_middle_r)*" ", end="")
+                    slot_middle_r = slot_length/2
+                    for _ in range(max_slots_level//n):
+                        print(math.floor(slot_middle_r-1)*" "+"/"+((slot_length-1)*(n-1)+n%2)*"-"+"\\"+math.ceil(slot_middle_r)*" ", end="")
                     print()
                     for _ in range(BRANCH_HEIGHT//2):
                         for _ in range(max_slots_level):
@@ -124,50 +123,3 @@ class UnorderedNaryTree:
                 
 
 
-# leaves
-n1  = Node(1)
-n2  = Node(2)
-n3  = Node(3)
-n4  = Node(4)
-n5  = Node(5)
-n6  = Node(6)
-n7  = Node(7)
-n8  = Node(8)
-n9  = Node(9)
-n10 = Node(10)
-n11 = Node(11)
-n12 = Node(12)
-n13 = Node(13)
-n14 = Node(14)
-n15 = Node(15)
-n15b = Node("15b")
-
-# level 3
-n16 = Node(16, [n1, n2])
-n17 = Node(17)#, [n3, n4])
-n18 = Node(18, [n5, n6])
-n19 = Node(19, [n7, n8])
-#n19 = Node(19, [n7])
-n20 = Node(20, [n9, n10])
-n21 = Node(21, [n11, n12])
-n22 = Node(22, [n13, n14])
-n23 = Node(23, [n15, n15b]) 
-
-# level 2
-n24 = Node(24, [n16, n17])
-n25 = Node(25, [n18, n19])
-n26 = Node(26)#, [n20, n21])
-#n26 = Node(26, [n20, n21])
-#n26 = Node(26, [n20])
-n27 = Node(27, [n22, n23])
-#n27 = Node(27, [n22])
-
-# level 1 (roots)
-root = Node(99, [n24, n25])
-right_root = Node(100, [n26, n27])
-
-# level 0 (super-root)
-super_root = Node(200, [root, right_root])
-# build the 3
-tree = UnorderedNaryTree(super_root)
-tree.print_tree()
