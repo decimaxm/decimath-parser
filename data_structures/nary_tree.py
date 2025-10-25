@@ -60,46 +60,54 @@ class UnorderedNaryTree:
 
         imposed_terminal_length = n**math.floor(math.log(terminal_length, n))
         #imposed_terminal_length = terminal_length
+
         print(imposed_terminal_length*"_")
         level = 0
         if not isinstance(self.root, Node):
             raise Exception("This three hasn't a valid root")
-        prev_mod = {}
+        
         queue = Queue[Node]()
         blank_queue = Queue[Node]()
         queue.enqueue(self.root)
         queue.enqueue(Node("\n"))
+
         internal_counter = 0
         max_slots_level = n**level
         slot_length = imposed_terminal_length // max_slots_level
         slot_middle_r = slot_length/2
+
         while len(queue) > 0:
             node = queue.dequeue()
             node_value = str(node)
             length = len(node_value)
             
-
             if node.value != '\n':
-                start_slot = slot_length * internal_counter
                 padding = (slot_length - length)/2
-                to_print = math.floor(padding)*" "+node_value+math.ceil(padding)*" "
+                print(math.floor(padding)*" "+node_value+math.ceil(padding)*" ", end="")
                 internal_counter = internal_counter+1
-                print(to_print, end="")
             else:
                 level = level+1
                 internal_counter = 0
                 print()
                 if len(queue) > 0:
+
+                    # print second half of the tree branches UNDER the nodes
                     for _ in range(BRANCH_HEIGHT):
                         for _ in range(max_slots_level):
                             print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
                         print()
+
+                    # compute values for the next level
                     max_slots_level = n**level
                     slot_length = imposed_terminal_length // max_slots_level
                     slot_middle_r = slot_length/2
+
+                    # print horizontal branches 
                     for _ in range(max_slots_level//n):
                         print(math.floor(slot_middle_r-1)*" "+"/"+((slot_length-1)*(n-1)+n%2)*"-"+"\\"+math.ceil(slot_middle_r)*" ", end="")
                     print()
+
+                    # print first half of the NEXT tree branches, OVER the future nodes
                     for _ in range(BRANCH_HEIGHT//2):
                         for _ in range(max_slots_level):
                             print(math.floor(slot_middle_r-1)*" "+"|"+math.ceil(slot_middle_r)*" ", end="")
