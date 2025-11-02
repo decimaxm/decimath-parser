@@ -14,12 +14,12 @@ class FSA:
         self.__transactions = {}
         self.__acceptance_states = set()
 
+    #TODO: should also create a wrapper for adding more states
     def add_state(self, name : str):
         '''Add a new state to the FSA, without transitions'''
-        if name not in self.__states.keys():
+        if name in self.__states.keys():
             raise KeyError(f"State {name} already exists")
         self.__states[name] = DState(name)
-
 
     # TODO: maybe implement input with a TOKEN class instead of STRING
     def add_transaction(self, start_state : str, input_str : str, final_state: str):

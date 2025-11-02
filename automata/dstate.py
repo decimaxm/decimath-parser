@@ -11,7 +11,3 @@ class DState:
         print("-"*(len(self.name)+4))
         print(f"| {self.name} |")
         print("-"*(len(self.name)+4))
-
-
-a = DState("F0")
-a.print_state()
