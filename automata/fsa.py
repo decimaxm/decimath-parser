@@ -1,6 +1,6 @@
-from dstate import DState
+from .dstate import DState
+from utils.dynamic_programming import memoize
 from pathlib import Path
-
 
 INITIAL_STATE = 'q0'
 
@@ -35,6 +35,7 @@ class FSA:
 
         if (start_state, input_str) not in self.__transitions.keys():
             self.__transitions[(start_state, input_str)] = final_state
+            # clear mappability cache at least for final_state
         else:
             raise KeyError(f"transition {(start_state, input_str)} already defined")
     
@@ -72,6 +73,7 @@ class FSA:
         '''Check that the head is in a final state'''
         return self.__head in self.__acceptance_states
 
+    @memoize
     def __check_reachable_state(self, name : str) -> bool:
         '''Checks whether a single state is reachable or not'''
         # main idea: check reachability recursively

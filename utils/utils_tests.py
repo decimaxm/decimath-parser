@@ -1,4 +1,4 @@
-from dynamic_programming import memoize
+from .dynamic_programming import memoize
 
 def memoization_test():
     

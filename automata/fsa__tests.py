@@ -1,4 +1,4 @@
-from fsa import FSA
+from .fsa import FSA
 
 def test_initial_state():
     fsa = FSA("toy")
