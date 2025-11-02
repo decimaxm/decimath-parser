@@ -69,6 +69,20 @@ def test_set_final_list(fsa: FSA):
         print("Error set_final(['q2', 'q3']):", e)
     print("Pass ✅\n")
 
+
+def test_reachable_state(fsa: FSA):
+    print("=== test_reachable_state ===")
+    fsa.add_state('q4')
+    fsa.add_state('q5')
+    fsa.add_state('q6')
+    fsa.add_transaction('q0', 'b', 'q4') # reachable
+    fsa.add_transaction('q5', 'd', 'q6') # not reachable
+    
+    assert fsa._FSA__check_reachable_state('q4'), "Expected: q4 should be reachable"
+    assert not fsa._FSA__check_reachable_state('q5'), "Expected: q5 shouldn't be reachable"
+    assert not fsa._FSA__check_reachable_state('q6'), "Expected: q6 shouldn't be reachable"
+    print("Pass ✅\n")
+
 def run_smoke_tests():
     fsa = test_initial_state()
     test_add_state(fsa)
@@ -77,6 +91,7 @@ def run_smoke_tests():
     test_invalid_transition(fsa)
     test_duplicate_transition(fsa)
     test_set_final_list(fsa)
+    test_reachable_state(fsa)
     
     print("=== All smoke tests completed ===")
     print("Stored states:", list(fsa._FSA__states.keys()))

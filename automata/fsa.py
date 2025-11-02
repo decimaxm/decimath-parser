@@ -14,7 +14,7 @@ class FSA:
         self.__transactions = {}
         self.__acceptance_states = set()
 
-    #TODO: should also create a wrapper for adding more states
+    #TODO: should also create a wrapper for adding more states through a list
     def add_state(self, name : str):
         '''Add a new state to the FSA, without transitions'''
         if name in self.__states.keys():
@@ -72,6 +72,24 @@ class FSA:
         '''Check that the head is in a final state'''
         return self.__head in self.__acceptance_states
 
+    def __check_reachable_state(self, name : str) -> bool:
+        '''Checks whether a single state is reachable or not'''
+        # main idea: check reachability recursively
+        # if exists a transition from state A to state B and A is reachable, B is reachable too
+        
+        if name == INITIAL_STATE:
+            return True
+        # check that B is reachable from ANY state
+        else: 
+            #TODO: definitely to be optimized! Here I'm doing a FULL SCAN of the dict (hash is on keys, not on values) -> O(n) -> not good for performance
+            #scan the transaction dict to get transactions immediately leading to the state and put them in a set 
+            predecessors = {k[0] for k,v in self.__transactions.items() if v == name} 
+            if len(predecessors) > 0:
+                for pred in predecessors:
+                    if self.__check_reachable_state(pred):
+                        return True
+            
+            return False
     #TODO
     def __check_reachable_states(self):
         '''Check that each state is reachable'''
