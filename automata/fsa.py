@@ -11,7 +11,7 @@ class FSA:
         self.name = name
         self.__head = INITIAL_STATE
         self.__states = {INITIAL_STATE: DState(INITIAL_STATE)} # I'm thinking about implementing it with a SET...  
-        self.__transactions = {}
+        self.__transitions = {}
         self.__acceptance_states = set()
 
     #TODO: should also create a wrapper for adding more states through a list
@@ -22,8 +22,8 @@ class FSA:
         self.__states[name] = DState(name)
 
     # TODO: maybe implement input with a TOKEN class instead of STRING
-    def add_transaction(self, start_state : str, input_str : str, final_state: str):
-        '''Add a transaction between state start_state and final_state when input_str is read'''
+    def add_transition(self, start_state : str, input_str : str, final_state: str):
+        '''Add a transition between state start_state and final_state when input_str is read'''
         if not isinstance(start_state, str) or not isinstance(input_str, str) or not isinstance(final_state, str):
             raise TypeError("Check input type")
         
@@ -33,10 +33,10 @@ class FSA:
         if final_state not in self.__states.keys():
             raise KeyError(f"Selected state {final_state} does not exist")
 
-        if (start_state, input_str) not in self.__transactions.keys():
-            self.__transactions[(start_state, input_str)] = final_state
+        if (start_state, input_str) not in self.__transitions.keys():
+            self.__transitions[(start_state, input_str)] = final_state
         else:
-            raise KeyError(f"Transaction {(start_state, input_str)} already defined")
+            raise KeyError(f"transition {(start_state, input_str)} already defined")
     
     def _set_final(self, final_state : str):
         '''Set a state as final'''
@@ -64,9 +64,9 @@ class FSA:
                 self._set_final(state)
 
     def move_head(self, input_str : str):
-        '''Set the head to the new state based on `input_str`, current state and transactions of the FSA'''
-        if (self.__head, input_str) in self.__transactions.keys():
-            self.__head = self.__transactions[(self.__head, input_str)]
+        '''Set the head to the new state based on `input_str`, current state and transitions of the FSA'''
+        if (self.__head, input_str) in self.__transitions.keys():
+            self.__head = self.__transitions[(self.__head, input_str)]
 
     def check_acceptance(self):
         '''Check that the head is in a final state'''
@@ -82,8 +82,8 @@ class FSA:
         # check that B is reachable from ANY state
         else: 
             #TODO: definitely to be optimized! Here I'm doing a FULL SCAN of the dict (hash is on keys, not on values) -> O(n) -> not good for performance
-            #scan the transaction dict to get transactions immediately leading to the state and put them in a set 
-            predecessors = {k[0] for k,v in self.__transactions.items() if v == name} 
+            #scan the transition dict to get transitions immediately leading to the state and put them in a set 
+            predecessors = {k[0] for k,v in self.__transitions.items() if v == name} 
             if len(predecessors) > 0:
                 for pred in predecessors:
                     if self.__check_reachable_state(pred):
