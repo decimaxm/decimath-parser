@@ -86,26 +86,26 @@ def test_reachable_state(fsa: FSA):
     print("Pass ✅\n")
 
 
-def test_reachable_states():
+def test_reachable_states(fsa: FSA):
     print("=== test_reachable_states ===")
-    fsa2 = FSA("toy3")
-    fsa2.add_state('q1')
-    fsa2.add_state('q2')
-    fsa2.add_state('q3')
-    fsa2.add_state('q4')
-    fsa2.add_state('q5')
-    fsa2.add_state('q6')
-    fsa2.add_state('q7')
-    fsa2.add_state('q8')
-    fsa2.add_transition('q0', 'a', 'q1') # q1 reachable
-    fsa2.add_transition('q1', 'a', 'q2') # q2 reachable
-    fsa2.add_transition('q2', 'a', 'q3') # q3 reachable
-    fsa2.add_transition('q2', 'b', 'q4') # q4 reachable
-    fsa2.add_transition('q2', 'c', 'q5') # q5 reachable
-    fsa2.add_transition('q6', 'c', 'q7') # q7 not reachable
-    fsa2.add_transition('q7', 'c', 'q8') # q8 not reachable
     
-    reachability = fsa2._FSA__check_reachable_states()
+    fsa.add_state('q1')
+    fsa.add_state('q2')
+    fsa.add_state('q3')
+    fsa.add_state('q4')
+    fsa.add_state('q5')
+    fsa.add_state('q6')
+    fsa.add_state('q7')
+    fsa.add_state('q8')
+    fsa.add_transition('q0', 'a', 'q1') # q1 reachable
+    fsa.add_transition('q1', 'a', 'q2') # q2 reachable
+    fsa.add_transition('q2', 'a', 'q3') # q3 reachable
+    fsa.add_transition('q2', 'b', 'q4') # q4 reachable
+    fsa.add_transition('q2', 'c', 'q5') # q5 reachable
+    fsa.add_transition('q6', 'c', 'q7') # q7 not reachable
+    fsa.add_transition('q7', 'c', 'q8') # q8 not reachable
+    
+    reachability = fsa._FSA__check_reachable_states()
     assert reachability['q0'], "Expected: q0 should be reachable"
     assert reachability['q1'], "Expected: q1 should be reachable"
     assert reachability['q2'], "Expected: q2 should be reachable"
@@ -117,6 +117,32 @@ def test_reachable_states():
     assert not reachability['q8'], "Expected: q8 shouldn't be reachable"
     print("Pass ✅\n")
 
+def test_recognize_string():
+    print("=== test_recognize_string ===")
+    fsa = FSA('Hello world')
+    fsa.add_state('q1')
+    fsa.add_state('q2')
+    fsa.add_state('q3')
+    fsa.add_state('q4')
+    fsa.add_state('q5')
+    fsa.add_state('q6')
+    fsa.add_state('q7')
+    fsa.add_transition('q0', 'H', 'q1') 
+    fsa.add_transition('q1', 'e', 'q2') 
+    fsa.add_transition('q2', 'l', 'q3') 
+    fsa.add_transition('q3', 'l', 'q4') 
+    fsa.add_transition('q4', 'o', 'q5') 
+    fsa.add_transition('q5', 'o', 'q5') 
+    fsa.add_transition('q5', '!', 'q6') 
+    fsa.set_final(['q5', 'q6'])
+    assert not fsa.recognize_string('aaa') , "Expected: aaa shouldn't be recognized"
+    assert fsa.recognize_string('Hello') , "Expected: Hello should be recognized"
+    assert fsa.recognize_string('Helloooooo') , "Expected: Helloooooo should be recognized"
+    assert not fsa.recognize_string('Hellooooooc') , "Expected: Helloooooo shouldn't be recognized"
+    assert fsa.recognize_string('Helloooooo!') , "Expected: Helloooooo should be recognized"
+    print("Pass ✅\n")
+
+
 
 def run_smoke_tests():
     fsa = test_initial_state()
@@ -127,7 +153,9 @@ def run_smoke_tests():
     test_duplicate_transition(fsa)
     test_set_final_list(fsa)
     test_reachable_state(fsa)
-    test_reachable_states()
+    fsa2 = FSA("toy2")
+    test_reachable_states(fsa2)
+    test_recognize_string()
     print("=== All smoke tests completed ===")
     print("Stored states:", list(fsa._FSA__states.keys()))
     print("Final states:", fsa._FSA__acceptance_states)

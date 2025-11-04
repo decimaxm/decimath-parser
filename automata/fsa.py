@@ -64,11 +64,18 @@ class FSA:
             for state in final_state:
                 self._set_final(state)
 
-    def move_head(self, input_str : str):
+    def move_head(self, input_str : str) -> bool:
         '''Set the head to the new state based on `input_str`, current state and transitions of the FSA'''
         if (self.__head, input_str) in self.__transitions.keys():
             self.__head = self.__transitions[(self.__head, input_str)]
+            return True
+        else:
+            return False 
 
+    def reset_head(self):
+        '''Set the head to the initial state'''
+        self.__head = INITIAL_STATE
+    
     def check_acceptance(self):
         '''Check that the head is in a final state'''
         return self.__head in self.__acceptance_states
@@ -103,4 +110,18 @@ class FSA:
 
     #TODO
     def dump_yaml(self, path : Path):
-        '''dump the FSA configuration in a YAML file'''
+        '''Dump the FSA configuration in a YAML file'''
+
+    def recognize_string(self, input_string: str, debug: bool = False) -> bool:
+        '''Checks whether `input_string` is recognized or not by the FSA'''
+        self.reset_head()
+        for c in input_string:
+            if not self.move_head(c):
+                if debug:
+                    print(f"({self.__head}, {c}) is not an allowed transition")
+                return False
+            elif debug:
+                print(f"{c} -> {self.__head}")
+        return self.__head in self.__acceptance_states
+        
+
