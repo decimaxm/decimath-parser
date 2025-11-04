@@ -75,13 +75,48 @@ def test_reachable_state(fsa: FSA):
     fsa.add_state('q4')
     fsa.add_state('q5')
     fsa.add_state('q6')
-    fsa.add_transition('q0', 'b', 'q4') # reachable
+    fsa.add_transition('q3', 'b', 'q4') # reachable
     fsa.add_transition('q5', 'd', 'q6') # not reachable
     
+    assert fsa._FSA__check_reachable_state('q2'), "Expected: q2 should be reachable"
+    assert fsa._FSA__check_reachable_state('q3'), "Expected: q3 should be reachable"
     assert fsa._FSA__check_reachable_state('q4'), "Expected: q4 should be reachable"
     assert not fsa._FSA__check_reachable_state('q5'), "Expected: q5 shouldn't be reachable"
     assert not fsa._FSA__check_reachable_state('q6'), "Expected: q6 shouldn't be reachable"
     print("Pass ✅\n")
+
+
+def test_reachable_states():
+    print("=== test_reachable_states ===")
+    fsa2 = FSA("toy3")
+    fsa2.add_state('q1')
+    fsa2.add_state('q2')
+    fsa2.add_state('q3')
+    fsa2.add_state('q4')
+    fsa2.add_state('q5')
+    fsa2.add_state('q6')
+    fsa2.add_state('q7')
+    fsa2.add_state('q8')
+    fsa2.add_transition('q0', 'a', 'q1') # q1 reachable
+    fsa2.add_transition('q1', 'a', 'q2') # q2 reachable
+    fsa2.add_transition('q2', 'a', 'q3') # q3 reachable
+    fsa2.add_transition('q2', 'b', 'q4') # q4 reachable
+    fsa2.add_transition('q2', 'c', 'q5') # q5 reachable
+    fsa2.add_transition('q6', 'c', 'q7') # q7 not reachable
+    fsa2.add_transition('q7', 'c', 'q8') # q8 not reachable
+    
+    reachability = fsa2._FSA__check_reachable_states()
+    assert reachability['q0'], "Expected: q0 should be reachable"
+    assert reachability['q1'], "Expected: q1 should be reachable"
+    assert reachability['q2'], "Expected: q2 should be reachable"
+    assert reachability['q3'], "Expected: q3 should be reachable"
+    assert reachability['q4'], "Expected: q4 should be reachable"
+    assert reachability['q5'], "Expected: q5 should be reachable"
+    assert not reachability['q6'], "Expected: q6 shouldn't be reachable"
+    assert not reachability['q7'], "Expected: q7 shouldn't be reachable"
+    assert not reachability['q8'], "Expected: q8 shouldn't be reachable"
+    print("Pass ✅\n")
+
 
 def run_smoke_tests():
     fsa = test_initial_state()
@@ -92,7 +127,7 @@ def run_smoke_tests():
     test_duplicate_transition(fsa)
     test_set_final_list(fsa)
     test_reachable_state(fsa)
-    
+    test_reachable_states()
     print("=== All smoke tests completed ===")
     print("Stored states:", list(fsa._FSA__states.keys()))
     print("Final states:", fsa._FSA__acceptance_states)

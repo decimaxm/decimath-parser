@@ -78,7 +78,6 @@ class FSA:
         '''Checks whether a single state is reachable or not'''
         # main idea: check reachability recursively
         # if exists a transition from state A to state B and A is reachable, B is reachable too
-        
         if name == INITIAL_STATE:
             return True
         # check that B is reachable from ANY state
@@ -92,11 +91,11 @@ class FSA:
                         return True
             
             return False
-    #TODO
-    def __check_reachable_states(self):
+
+    def __check_reachable_states(self) -> dict:
         '''Check that each state is reachable'''
-        pass
-    
+        return {state : self.__check_reachable_state(state) for state in self.__states}
+
     #TODO
     def parse_yaml(self, path : Path):
         '''create a FSA from YAML configuration file'''
@@ -105,4 +104,3 @@ class FSA:
     #TODO
     def dump_yaml(self, path : Path):
         '''dump the FSA configuration in a YAML file'''
-    
